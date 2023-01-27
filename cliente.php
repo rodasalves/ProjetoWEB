@@ -1,76 +1,19 @@
 <?php
-
-    session_start();
-    require("config.php");
+session_start();
+require("config.php"); 
+$conn = mysqli_connect(DB_SERVER, DB_USER, DB_PASSWORD, DB_NAME); 
+mysqli_set_charset($conn,'UTF8');
     
-    $conn = mysqli_connect(DB_SERVER, DB_USER, DB_PASSWORD, DB_NAME); 
-    mysqli_set_charset($conn,'UTF8');
-if (isset($_POST['login'])){
-        $username=$_POST["username"];
-        $password=$_POST["password"];
-        $pass_enc=md5($password);
-            if ($username !='' and $password !=''){
-                $sql_consulta=sprintf("select * from registo where username='%s' and password='%s';", $username, $pass_enc);
-                $res_consulta=mysqli_query($conn,$sql_consulta);
-                
+        if($_SESSION["nivel"]!=1){
+                   header('location:Inicio.php');
+      }
 
-                if (mysqli_num_rows($res_consulta)>0){
-                    $_SESSION['username']=$username;
-                    $reg_consulta=mysqli_fetch_array($res_consulta);
-                    $_SESSION['nivel']=$reg_consulta['nivel'];
-                        if($_SESSION["nivel"]==5){
-                            header('location:administrador.php');
-                        }elseif($_SESSION["nivel"]==1){
-                            header('location:cliente.php');
-                         }elseif($_SESSION["nivel"]==0){
-                            header('location:block.php');
-                                }
-                }else{
-                    ?>
-                    <script type="text/javascript">
-                               <!--
-                               var answer = confirm("CONTA NÃO EXISTE!");
-                               if (!answer){
-                               window.location = "GamesForever";
-                               }
-                               //-->
-                               </script>
-<?php        
-                }        
-            
-                }else{ 
-            ?>
-                    <script type="text/javascript">
-                               <!--
-                               var answer = confirm("PREENCHA DADOS EM BRANCO!");
-                               if (!answer){
-                               window.location = "GamesForever";
-                               }
-                               //-->
-                               </script>
-<?php
-                }
-         if($_SESSION["username"]!=""){
-                           
-        $sql_consulta=sprintf("select * from registo where username='%s';",$_SESSION["username"]);
-        $res_consulta=mysqli_query($conn,$sql_consulta);
-        $num_consulta=mysqli_fetch_array($res_consulta);
-                           
-            if ($num_consulta['nivel']==5){
-                ?>
-                           
-                  <li><a href="administrador.php">Administrador</a></li>
-                           
-                 <?php
-            }
-                           
-    }
-}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Login</title>
+<title>Cliente</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="aStar Fashion Template Project">
@@ -103,7 +46,7 @@ if (isset($_POST['login'])){
 			<!-- Navigation -->
 			<nav class="header_nav">
 				<ul class="d-flex flex-row align-items-center justify-content-start">
-					<li><a href="index.php">Inicio</a></li>
+					<li><a href="Inicio.php">Inicio</a></li>
 					<li><a href="#">Steam</a></li>
 					<li><a href="#">Origin</a></li>
 					<li><a href="#">RockStar</a></li>
@@ -161,9 +104,8 @@ if (isset($_POST['login'])){
 
 				<!-- Cart -->
 				<div class="cart d-flex flex-row align-items-center justify-content-start">
-					<div class="cart_icon"><a href="cart.php">
+					<div class="cart_icon"><a href="cart.html">
 						<img src="images/bag.png" alt="">
-						<div class="cart_num">2</div>
 					</a></div>
 				</div>
 
@@ -232,7 +174,7 @@ if (isset($_POST['login'])){
 		</div>
 		<nav class="menu_nav">
 			<ul class="menu_mm">
-				<li><a href="index.php">Inicio</a></li>
+				<li><a href="Inicio.php">Inicio</a></li>
 					<li><a href="#">Steam</a></li>
 					<li><a href="#">Origin</a></li>
 					<li><a href="#">RockStar</a></li>
@@ -266,12 +208,14 @@ if (isset($_POST['login'])){
 					<div class="language_flag"><img src="images/flag_6.png" alt="https://www.flaticon.com/authors/freepik"></div>
 					<div class="dropdown_text">Português</div>
 					<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+
 				</div>
 
 				<!-- Currency -->
 				<div class="info_currencies has_children">
 					<div class="dropdown_text">EUR</div>
 					<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+
 				</div>
 
 			</div>
@@ -285,7 +229,7 @@ if (isset($_POST['login'])){
 
 		<!-- Sidebar Navigation -->
 		<?php
-		            $sql_cate=sprintf("select * from categorias where nivel!=4 and nivel!=5;");
+		            $sql_cate=sprintf("select * from categorias where nivel!=3 and nivel!=5;");
                     $res_cate=mysqli_query($conn,$sql_cate);
                     ?>
                     <nav class="sidebar_nav">
@@ -308,31 +252,32 @@ if (isset($_POST['login'])){
                         </ul>
                     </nav>
 
+
 		<!-- Cart -->
 		<div class="cart d-flex flex-row align-items-center justify-content-start">
 			<div class="cart_icon"><a href="cart.php">
 				<img src="images/bag.png" alt="">
 			</a></div>
-			<div class="cart_text">carro</div>
+            <div class="cart_text">carro</div>
 		</div>
 	</div>
-
-	<!-- Home -->
+    
+    	<!-- Home -->
 
 	<div class="home">
 		<div class="parallax_background parallax-window" data-parallax="scroll" data-image-src="images/checkout.jpg" data-speed="0.8"></div>
 		<div class="home_container">
 			<div class="home_content">
-				<div class="home_title">Login</div>
 				<div class="breadcrumbs">
+					<ul class="d-flex flex-row align-items-center justify-content-start">
+					</ul>
 				</div>
 			</div>
 		</div>
 	</div>
-
-	<!-- Checkout -->
-
-	<div class="checkout">
+    
+    
+    <div class="checkout">
 		<div class="section_container">
 			<div class="container">
 				<div class="row">
@@ -341,22 +286,11 @@ if (isset($_POST['login'])){
 							
 							<!-- Billing -->
 							<div class="billing checkout_box">
-								<div class="checkout_title">Login</div>
+								<div class="checkout_title">Cliente</div>
 								<div class="checkout_form_container">
 									<form action="#" id="checkout_form" class="checkout_form" method="post">
-										<div>
-											<!-- Username -->
-											<label for="checkout_company">Username</label>
-											<input type="text" name="username" id="checkout_company" class="checkout_input" required="required">
-										</div>
-										<div>
-											<!-- Password -->
-											<label for="checkout_email">Password</label>
-											<input type="password" name="password" id="checkout_email" class="checkout_input" required="required">
-										</div>
-                                        <button type="submit" name="login" class="checkout_button">Fazer Login</button>
-                                        <div class="product_button ml-auto mr-auto trans_200"><a href="registo.php">Registe-se</a></div>
-                                        <div class="product_button ml-auto mr-auto trans_200"><a href="rec_pass.php">Esqueceu-se da sua palavra-passe?</a></div>
+                                        <input type="button" name="logout" onclick="javascript:document.location='logout.php'" class="checkout_button" value="Logout">
+                                        
 									</form>
 								</div>
 							</div>

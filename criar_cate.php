@@ -1,76 +1,36 @@
 <?php
-
-    session_start();
-    require("config.php");
-    
-    $conn = mysqli_connect(DB_SERVER, DB_USER, DB_PASSWORD, DB_NAME); 
-    mysqli_set_charset($conn,'UTF8');
-if (isset($_POST['login'])){
-        $username=$_POST["username"];
-        $password=$_POST["password"];
-        $pass_enc=md5($password);
-            if ($username !='' and $password !=''){
-                $sql_consulta=sprintf("select * from registo where username='%s' and password='%s';", $username, $pass_enc);
-                $res_consulta=mysqli_query($conn,$sql_consulta);
-                
-
-                if (mysqli_num_rows($res_consulta)>0){
-                    $_SESSION['username']=$username;
-                    $reg_consulta=mysqli_fetch_array($res_consulta);
-                    $_SESSION['nivel']=$reg_consulta['nivel'];
-                        if($_SESSION["nivel"]==5){
-                            header('location:administrador.php');
-                        }elseif($_SESSION["nivel"]==1){
-                            header('location:cliente.php');
-                         }elseif($_SESSION["nivel"]==0){
-                            header('location:block.php');
-                                }
-                }else{
-                    ?>
-                    <script type="text/javascript">
-                               <!--
-                               var answer = confirm("CONTA NÃO EXISTE!");
-                               if (!answer){
-                               window.location = "GamesForever";
-                               }
-                               //-->
-                               </script>
-<?php        
-                }        
+            session_start();
+            require("config.php");
+            $conn = mysqli_connect(DB_SERVER, DB_USER, DB_PASSWORD, DB_NAME);
+            mysqli_set_charset($conn, 'UTF8');
             
-                }else{ 
-            ?>
-                    <script type="text/javascript">
-                               <!--
-                               var answer = confirm("PREENCHA DADOS EM BRANCO!");
-                               if (!answer){
-                               window.location = "GamesForever";
-                               }
-                               //-->
-                               </script>
-<?php
-                }
-         if($_SESSION["username"]!=""){
-                           
-        $sql_consulta=sprintf("select * from registo where username='%s';",$_SESSION["username"]);
-        $res_consulta=mysqli_query($conn,$sql_consulta);
-        $num_consulta=mysqli_fetch_array($res_consulta);
-                           
-            if ($num_consulta['nivel']==5){
-                ?>
-                           
-                  <li><a href="administrador.php">Administrador</a></li>
-                           
-                 <?php
+            if($_SESSION["nivel"]!=5){
+                   header('location:Inicio.php');
             }
-                           
-    }
-}
+
+            $sql_consulta=sprintf("select * from registo where username='%s';",$_SESSION["username"]);
+            $res_consulta=mysqli_query($conn,$sql_consulta);
+            $num_consulta=mysqli_fetch_array($res_consulta);
+
+            if ($num_consulta['nivel']!=5){
+                            
+                $sql_cate=sprintf("select * from categorias where nivel!=2;");
+                $res_cate=mysqli_query($conn,$sql_cate);
+                
+                header('location:index.php');
+                
+            } else{
+                
+                $sql_cate=sprintf("select * from categorias;");
+                $res_cate=mysqli_query($conn,$sql_cate);
+                
+            }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Login</title>
+<title>Checkout</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="aStar Fashion Template Project">
@@ -109,7 +69,7 @@ if (isset($_POST['login'])){
 					<li><a href="#">RockStar</a></li>
 					<li><a href="#">Battle.net</a></li>
                     <li><a href="#">EpicGames</a></li>
-					<li><a href="login.php">Login</a></li>
+					<li><a href="#">Login</a></li>
 				</ul>
 			</nav>
 
@@ -161,7 +121,7 @@ if (isset($_POST['login'])){
 
 				<!-- Cart -->
 				<div class="cart d-flex flex-row align-items-center justify-content-start">
-					<div class="cart_icon"><a href="cart.php">
+					<div class="cart_icon"><a href="cart.html">
 						<img src="images/bag.png" alt="">
 						<div class="cart_num">2</div>
 					</a></div>
@@ -224,7 +184,7 @@ if (isset($_POST['login'])){
 		</div>
 		<div class="menu_search">
 			<form action="#" class="header_search_form menu_mm">
-				<input type="search" class="search_input menu_mm" placeholder="Search" required="required">
+				<input type="search" class="search_input menu_mm" placeholder="Procurar" required="required">
 				<button class="header_search_button d-flex flex-column align-items-center justify-content-center menu_mm">
 					<i class="fa fa-search menu_mm" aria-hidden="true"></i>
 				</button>
@@ -252,8 +212,7 @@ if (isset($_POST['login'])){
 			</div>
 		</div>
 	</div>
-	
-	<!-- Sidebar -->
+    	<!-- Sidebar -->
 
 	<div class="sidebar">
 		
@@ -266,12 +225,16 @@ if (isset($_POST['login'])){
 					<div class="language_flag"><img src="images/flag_6.png" alt="https://www.flaticon.com/authors/freepik"></div>
 					<div class="dropdown_text">Português</div>
 					<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+					
+
 				</div>
 
 				<!-- Currency -->
 				<div class="info_currencies has_children">
 					<div class="dropdown_text">EUR</div>
 					<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+
+
 				</div>
 
 			</div>
@@ -284,8 +247,13 @@ if (isset($_POST['login'])){
 		</div>
 
 		<!-- Sidebar Navigation -->
-		<?php
-		            $sql_cate=sprintf("select * from categorias where nivel!=4 and nivel!=5;");
+        <?php
+		if($_SESSION["username"]!=""){
+            $sql_consulta=sprintf("select * from registo where username='%s';",$_SESSION["username"]);
+            $res_consulta=mysqli_query($conn,$sql_consulta);
+            $num_consulta=mysqli_fetch_array($res_consulta);
+                if ($num_consulta['nivel']==5){
+		            $sql_cate=sprintf("select * from categorias where nivel!=3 and nivel!=4;");
                     $res_cate=mysqli_query($conn,$sql_cate);
                     ?>
                     <nav class="sidebar_nav">
@@ -307,31 +275,73 @@ if (isset($_POST['login'])){
                             ?>
                         </ul>
                     </nav>
+        <?php
+            }
+        }
+        ?> 
 
 		<!-- Cart -->
 		<div class="cart d-flex flex-row align-items-center justify-content-start">
-			<div class="cart_icon"><a href="cart.php">
+			<div class="cart_icon"><a href="cart.html">
 				<img src="images/bag.png" alt="">
+
 			</a></div>
-			<div class="cart_text">carro</div>
+			<div class="cart_text">Carro</div>
+
 		</div>
 	</div>
-
+            
+            
 	<!-- Home -->
 
 	<div class="home">
 		<div class="parallax_background parallax-window" data-parallax="scroll" data-image-src="images/checkout.jpg" data-speed="0.8"></div>
 		<div class="home_container">
 			<div class="home_content">
-				<div class="home_title">Login</div>
 				<div class="breadcrumbs">
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Checkout -->
+    
+        	<!-- Checkout -->
+    <style>
+               table {
+                   font-family: arial, sans-serif;
+                   border-collapse: collapse;
+                   width: 100%;
+               }
 
+               td, th {
+                   border: 1px solid #dddddd;
+                   text-align: left;
+                   padding: 8px;
+               }
+
+               tr:nth-child(even) {
+                   background-color: #c2c2d6;
+               }
+
+               .btn {
+                 border: none;
+                 color: black;
+                 padding: 14px 26px;
+                 font-size: 16px;
+                 cursor: pointer;
+               }
+
+               .success {
+                 border-color: #ffffff;
+                 color: black;
+               }
+
+               .success:hover {
+                 background-color: #ffffff;
+                 color: black;
+               }
+        </style>
+    
 	<div class="checkout">
 		<div class="section_container">
 			<div class="container">
@@ -341,23 +351,26 @@ if (isset($_POST['login'])){
 							
 							<!-- Billing -->
 							<div class="billing checkout_box">
-								<div class="checkout_title">Login</div>
+								<div class="checkout_title">Criar Categorias</div>
 								<div class="checkout_form_container">
 									<form action="#" id="checkout_form" class="checkout_form" method="post">
-										<div>
-											<!-- Username -->
-											<label for="checkout_company">Username</label>
-											<input type="text" name="username" id="checkout_company" class="checkout_input" required="required">
-										</div>
-										<div>
-											<!-- Password -->
-											<label for="checkout_email">Password</label>
-											<input type="password" name="password" id="checkout_email" class="checkout_input" required="required">
-										</div>
-                                        <button type="submit" name="login" class="checkout_button">Fazer Login</button>
-                                        <div class="product_button ml-auto mr-auto trans_200"><a href="registo.php">Registe-se</a></div>
-                                        <div class="product_button ml-auto mr-auto trans_200"><a href="rec_pass.php">Esqueceu-se da sua palavra-passe?</a></div>
-									</form>
+                                                <div>
+											         <!-- Noem do Jogo -->
+											             <label for="checkout_company">Nome</label>
+											             <input type="text" name="nome" id="checkout_company" class="checkout_input" required="required">
+                                                </div>
+                                                
+                                                
+                        
+                                            <br>
+        
+                                            <div class="row">
+                                            <div class="col-md-12">                            
+                                            <button type="submit" name="criar" class="checkout_button" >Criar</button>      
+
+                                            </div>
+                                            </div>
+                                        </form>
 								</div>
 							</div>
 						</div>
@@ -365,7 +378,77 @@ if (isset($_POST['login'])){
 				</div>
 			</div>
 		</div>
-	</div>   
+	</div>
+			<!-- End Registo Area -->
+
+            
+            
+            <!-- star enviar area -->
+            
+        <?php
+            
+            if(isset($_POST['criar'])){  
+                    
+            $nome=$_POST['nome'];
+            $codigo=$_POST['codigo'];
+
+                
+                if ($nome!=""){
+                             
+                    $sql_insere=sprintf("insert into categorias (categoria,codigo) values ('%s', '%s');",$nome, $codigo);
+
+                    
+                            if(mysqli_query($conn,$sql_insere)){
+
+            ?>
+
+                                <script type="text/javascript">
+                                    <!--
+                                    var answer = confirm("SUCESSO!");
+                                    if (!answer){
+                                    window.location = "GamesForever";
+                                    }
+                                    //-->
+                                </script>
+
+                        <?php
+
+                            } else {
+                        ?>
+
+                                <script type="text/javascript">
+                                    <!--
+                                    var answer = confirm("OCORREU UM PROBLEMA POR FAVOR REPITA!");
+                                    if (!answer){
+                                    window.location = "GamesForever";
+                                    }
+                                    //-->
+                                </script>
+                <?php
+                            }
+                        
+                    
+                } else{
+                    
+            ?>
+
+                    <script type="text/javascript">
+                        <!--
+                        var answer = confirm("EXISTEM DADOS EM BRANCO!");
+                        if (!answer){
+                        window.location = "GamesForever";
+                        }
+                        //-->
+                    </script>
+
+            <?php
+                }
+                  
+            }
+              ?>
+              
+    
+
 
 		<!-- Credits -->
 		<div class="credits">

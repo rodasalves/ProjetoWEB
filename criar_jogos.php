@@ -1,76 +1,56 @@
 <?php
+session_start();
+require("config.php");
 
-    session_start();
-    require("config.php");
-    
-    $conn = mysqli_connect(DB_SERVER, DB_USER, DB_PASSWORD, DB_NAME); 
-    mysqli_set_charset($conn,'UTF8');
-if (isset($_POST['login'])){
-        $username=$_POST["username"];
-        $password=$_POST["password"];
-        $pass_enc=md5($password);
-            if ($username !='' and $password !=''){
-                $sql_consulta=sprintf("select * from registo where username='%s' and password='%s';", $username, $pass_enc);
-                $res_consulta=mysqli_query($conn,$sql_consulta);
-                
+$conn = mysqli_connect(DB_SERVER, DB_USER, DB_PASSWORD, DB_NAME);
+mysqli_set_charset($conn,'UTF8');
 
-                if (mysqli_num_rows($res_consulta)>0){
-                    $_SESSION['username']=$username;
-                    $reg_consulta=mysqli_fetch_array($res_consulta);
-                    $_SESSION['nivel']=$reg_consulta['nivel'];
-                        if($_SESSION["nivel"]==5){
-                            header('location:administrador.php');
-                        }elseif($_SESSION["nivel"]==1){
-                            header('location:cliente.php');
-                         }elseif($_SESSION["nivel"]==0){
-                            header('location:block.php');
-                                }
-                }else{
-                    ?>
-                    <script type="text/javascript">
-                               <!--
-                               var answer = confirm("CONTA NÃO EXISTE!");
-                               if (!answer){
-                               window.location = "GamesForever";
-                               }
-                               //-->
-                               </script>
-<?php        
-                }        
+
+if($_SESSION["nivel"]!=5){
+                   header('location:Inicio.php');
+      }
+
+if (isset($_POST['submeter'])){
+    if ((isset($_FILES['imagem'])) && (!empty($_FILES['imagem']['tmp_name']))){             
+       if ($_FILES['imagem']['size'] <= 2048000){
             
-                }else{ 
-            ?>
-                    <script type="text/javascript">
-                               <!--
-                               var answer = confirm("PREENCHA DADOS EM BRANCO!");
-                               if (!answer){
-                               window.location = "GamesForever";
-                               }
-                               //-->
-                               </script>
-<?php
+            $extensoes_validas=array('jpg', 'jpeg', 'bmp', 'png', 'pcx', 'jfif');
+           
+            $extensao=strtolower(pathinfo($_FILES['imagem']['name'], PATHINFO_EXTENSION));
+            
+           if (in_array($extensao, $extensoes_validas)){     
+                    $nome_imagem=utf8_decode($_FILES["imagem"]["name"]);
+                    
+                    $img_hash=$nome_imagem.date('Y-m-d').date('H:i:s');
+                    
+                    $img_hash=md5($img_hash);  
+                        
+                    $img_save_as=$img_hash.'.'.$extensao;
+                    
+                if (move_uploaded_file($_FILES['imagem']['tmp_name'], 'images/'.$img_save_as)){
+                    $msg='SUCESSO!!!!';
+                    // GRAVAR NA BASE DE DADOS
+                    $sql=sprintf("insert into jogos (nome_original, nome_fisico, extensao, nome_jogo, preco, plataforma, descricao) values ('%s','%s','%s','%s','%s','%s','%s');",$nome_imagem,$img_save_as,$extensao,$_POST['nome'],$_POST['preco'],$_POST['plataforma'],$_POST['descricao']);
+                    mysqli_query($conn,$sql);
+                } else {
+                    $msg='FALHOU!!!!';
                 }
-         if($_SESSION["username"]!=""){
-                           
-        $sql_consulta=sprintf("select * from registo where username='%s';",$_SESSION["username"]);
-        $res_consulta=mysqli_query($conn,$sql_consulta);
-        $num_consulta=mysqli_fetch_array($res_consulta);
-                           
-            if ($num_consulta['nivel']==5){
-                ?>
-                           
-                  <li><a href="administrador.php">Administrador</a></li>
-                           
-                 <?php
-            }
-                           
-    }
+            } else {
+               $msg='Formato de ficheiro inválido. Por favor corrija.';
+           }
+       } else {
+           $msg='Tamanho excessivo da imagem. Por favor corrija.';
+       }
+    } else {
+           $msg='SEM NADA SELECIONADO';
+       }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Login</title>
+<title>Checkout</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="aStar Fashion Template Project">
@@ -109,7 +89,7 @@ if (isset($_POST['login'])){
 					<li><a href="#">RockStar</a></li>
 					<li><a href="#">Battle.net</a></li>
                     <li><a href="#">EpicGames</a></li>
-					<li><a href="login.php">Login</a></li>
+					<li><a href="#">Login</a></li>
 				</ul>
 			</nav>
 
@@ -161,7 +141,7 @@ if (isset($_POST['login'])){
 
 				<!-- Cart -->
 				<div class="cart d-flex flex-row align-items-center justify-content-start">
-					<div class="cart_icon"><a href="cart.php">
+					<div class="cart_icon"><a href="cart.html">
 						<img src="images/bag.png" alt="">
 						<div class="cart_num">2</div>
 					</a></div>
@@ -224,7 +204,7 @@ if (isset($_POST['login'])){
 		</div>
 		<div class="menu_search">
 			<form action="#" class="header_search_form menu_mm">
-				<input type="search" class="search_input menu_mm" placeholder="Search" required="required">
+				<input type="search" class="search_input menu_mm" placeholder="Procurar" required="required">
 				<button class="header_search_button d-flex flex-column align-items-center justify-content-center menu_mm">
 					<i class="fa fa-search menu_mm" aria-hidden="true"></i>
 				</button>
@@ -252,8 +232,7 @@ if (isset($_POST['login'])){
 			</div>
 		</div>
 	</div>
-	
-	<!-- Sidebar -->
+    	<!-- Sidebar -->
 
 	<div class="sidebar">
 		
@@ -266,12 +245,14 @@ if (isset($_POST['login'])){
 					<div class="language_flag"><img src="images/flag_6.png" alt="https://www.flaticon.com/authors/freepik"></div>
 					<div class="dropdown_text">Português</div>
 					<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+
 				</div>
 
 				<!-- Currency -->
 				<div class="info_currencies has_children">
 					<div class="dropdown_text">EUR</div>
 					<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+
 				</div>
 
 			</div>
@@ -285,7 +266,12 @@ if (isset($_POST['login'])){
 
 		<!-- Sidebar Navigation -->
 		<?php
-		            $sql_cate=sprintf("select * from categorias where nivel!=4 and nivel!=5;");
+		if($_SESSION["username"]!=""){
+            $sql_consulta=sprintf("select * from registo where username='%s';",$_SESSION["username"]);
+            $res_consulta=mysqli_query($conn,$sql_consulta);
+            $num_consulta=mysqli_fetch_array($res_consulta);
+                if ($num_consulta['nivel']==5){
+		            $sql_cate=sprintf("select * from categorias where nivel!=3 and nivel!=4;");
                     $res_cate=mysqli_query($conn,$sql_cate);
                     ?>
                     <nav class="sidebar_nav">
@@ -307,13 +293,17 @@ if (isset($_POST['login'])){
                             ?>
                         </ul>
                     </nav>
+        <?php
+            }
+        }
+        ?> 
 
 		<!-- Cart -->
 		<div class="cart d-flex flex-row align-items-center justify-content-start">
-			<div class="cart_icon"><a href="cart.php">
+			<div class="cart_icon"><a href="cart.html">
 				<img src="images/bag.png" alt="">
 			</a></div>
-			<div class="cart_text">carro</div>
+            <div class="cart_text">Carro</div>
 		</div>
 	</div>
 
@@ -323,14 +313,31 @@ if (isset($_POST['login'])){
 		<div class="parallax_background parallax-window" data-parallax="scroll" data-image-src="images/checkout.jpg" data-speed="0.8"></div>
 		<div class="home_container">
 			<div class="home_content">
-				<div class="home_title">Login</div>
 				<div class="breadcrumbs">
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Checkout -->
+<body>
+    <?php
+    if (isset($_POST['submeter'])){                    
+        if (isset($msg)===true) {
+            ?>
+            <div class="alert alert-info"> 
+                 <p><?php echo $msg; ?></p>
+            </div>
+            <?php
+        }           
+    }
+
+    ?>
+    <hr>
+    <?php
+    $sql_ver=sprintf("select * from jogos;");
+    $res_ver=mysqli_query($conn,$sql_ver);
+    ?>
+    	<!-- Checkout -->
 
 	<div class="checkout">
 		<div class="section_container">
@@ -341,23 +348,46 @@ if (isset($_POST['login'])){
 							
 							<!-- Billing -->
 							<div class="billing checkout_box">
-								<div class="checkout_title">Login</div>
+								<div class="checkout_title">Upload</div>
 								<div class="checkout_form_container">
-									<form action="#" id="checkout_form" class="checkout_form" method="post">
-										<div>
-											<!-- Username -->
-											<label for="checkout_company">Username</label>
-											<input type="text" name="username" id="checkout_company" class="checkout_input" required="required">
-										</div>
-										<div>
-											<!-- Password -->
-											<label for="checkout_email">Password</label>
-											<input type="password" name="password" id="checkout_email" class="checkout_input" required="required">
-										</div>
-                                        <button type="submit" name="login" class="checkout_button">Fazer Login</button>
-                                        <div class="product_button ml-auto mr-auto trans_200"><a href="registo.php">Registe-se</a></div>
-                                        <div class="product_button ml-auto mr-auto trans_200"><a href="rec_pass.php">Esqueceu-se da sua palavra-passe?</a></div>
-									</form>
+									    <form method="post" enctype="multipart/form-data">                    
+                                            <div class="row">
+                                            <div class="col-md-6"> 
+                                                <div>
+											         <!-- Noem do Jogo -->
+											             <label for="checkout_company">Nome</label>
+											             <input type="text" name="nome" id="checkout_company" class="checkout_input" required="required">
+                                                </div>
+                                                <div>
+											         <!-- Preço do Jogo -->
+											             <label for="checkout_company">Preço</label>
+											             <input type="text" name="preco" id="checkout_company" class="checkout_input" required="required">
+                                                </div>
+                                                <div>
+											         <!-- Plataforma do Jogo -->
+											             <label for="checkout_company">Plataforma</label>
+											             <input type="text" name="plataforma" id="checkout_company" class="checkout_input" required="required">
+                                                </div>
+                                                <div>
+											         <!-- Descrição do Jogo -->
+											             <label for="checkout_company">Descrição</label>
+											             <input type="text" name="descricao" id="checkout_company" class="checkout_input" required="required">
+                                                </div>
+                                                        <h5>IMAGEM POP-UP</h5> 
+                                                        <input class="text-field form-control" type="file" name="imagem" id="imagem" accept="image/*" />	
+                                            </div>
+                                          
+                                            </div>
+                        
+                                            <br>
+        
+                                            <div class="row">
+                                            <div class="col-md-12">                            
+                                            <button type="submit" name="submeter" class="checkout_button" >Upload Jogo</button>      
+
+                                            </div>
+                                            </div>
+                                        </form>
 								</div>
 							</div>
 						</div>
@@ -365,7 +395,32 @@ if (isset($_POST['login'])){
 				</div>
 			</div>
 		</div>
-	</div>   
+	</div>
+    
+    <!--<table class="table">
+        <tr>
+            <th>NOME ORIGINAL</th>
+            <th>NOME FISICO</th>
+            
+            <th>IMAGEM</th>
+            <th>EXTENSÃO</th>
+        </tr>
+        
+        //while($reg_ver=mysqli_fetch_array($res_ver)){
+            ?>
+            <tr>
+                <td><?php //echo $reg_ver['nome_original']; ?></td>
+                <td><?php //echo $reg_ver['nome_fisico']; ?></td>
+                
+                <td><img src="images/<?php //echo $reg_ver['nome_fisico']; ?>" style="width: 80px;"></td>
+                <td><?php //echo $reg_ver['extensao']; ?></td>
+            </tr>
+            <?php
+       // }
+        ?>
+    </table>-->
+
+</body>
 
 		<!-- Credits -->
 		<div class="credits">
