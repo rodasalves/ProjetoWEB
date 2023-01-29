@@ -14,7 +14,7 @@
     $res=mysqli_query($conn,$sql);
     $reg=mysqli_fetch_array($res);
 
-    $sql_cliente=sprintf("select * from registo where username='%s",$_SESSION['username']);
+    $sql_cliente=sprintf("select * from registo where username='%s';",$_SESSION['username']);
     $res_cliente=mysqli_query($conn,$sql_cliente);
     $reg_cliente=mysqli_fetch_array($res_cliente);
     
