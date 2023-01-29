@@ -275,7 +275,7 @@
 				
 				<!-- Slide -->
 				<div class="owl-item">
-					<div class="background_image" style="background-image:url(images/home_slider_4.jpg)"></div>
+					<div class="background_image" style="background-image:url(images/home_slider_5.jpg)"></div>
 					<div class="home_content_container">
 						<div class="home_content">
 						</div>
