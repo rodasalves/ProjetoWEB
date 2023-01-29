@@ -6,13 +6,34 @@
     $conn = mysqli_connect(DB_SERVER, DB_USER, DB_PASSWORD, DB_NAME); 
     mysqli_set_charset($conn,'UTF8');
 
-    $_SESSION['id']="";
-  
+    if($_SESSION["nivel"]!=1 & $_SESSION["nivel"]!=5){
+                   header('location:Inicio.php');
+      }
+
+if(!isset($_SESSION['username']))
+{
+    header("location:login.php");
+}
+
+    if ($_SESSION['id']==""){
+        $_SESSION['id']=$_POST['id'];
+    }
+
+    if(isset($_POST['add'])){
+        $sql_add=sprintf("update carrinho set quantidade = %d where id=%d;",$_POST['quant'],$_POST['id']);
+	       $res_add=mysqli_query($conn,$sql_add);  
+        }
+
+    if(isset($_POST['eliminar'])) {
+        $sql_de=sprintf("delete from carrinho where id=%d;",$_POST['id']);
+            $res_de=mysqli_query($conn,$sql_de);
+        }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>GamesForever</title>
+<title>Carrinho</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="aStar Fashion Template Project">
@@ -22,8 +43,8 @@
 <link rel="stylesheet" type="text/css" href="plugins/OwlCarousel2-2.2.1/owl.carousel.css">
 <link rel="stylesheet" type="text/css" href="plugins/OwlCarousel2-2.2.1/owl.theme.default.css">
 <link rel="stylesheet" type="text/css" href="plugins/OwlCarousel2-2.2.1/animate.css">
-<link rel="stylesheet" type="text/css" href="styles/main_styles.css">
-<link rel="stylesheet" type="text/css" href="styles/responsive.css">
+<link rel="stylesheet" type="text/css" href="styles/cart.css">
+<link rel="stylesheet" type="text/css" href="styles/cart_responsive.css">
 </head>
 <body>
 
@@ -40,20 +61,19 @@
 			<!-- Logo -->
 			<div class="sidebar_logo">
 			<a href="#"><div>Games
-                <span>Forever</span></div></a> 
+                <span>Forever</span></div></a>
 		</div>
 
 
 			<!-- Navigation -->
 			<nav class="header_nav">
 				<ul class="d-flex flex-row align-items-center justify-content-start">
-					<li><a href="index.php">Inicio</a></li>
-					<li><a href="steam.php">Steam</a></li>
-					<li><a href="#">Origin</a></li>
-					<li><a href="#">RockStar</a></li>
-					<li><a href="#">Battle.net</a></li>
-                    <li><a href="#">EpicGames</a></li>
-					<li><a href="login.php">Login</a></li>
+					<li><a href="index.php">home</a></li>
+					<li><a href="#">woman</a></li>
+					<li><a href="#">man</a></li>
+					<li><a href="#">lookbook</a></li>
+					<li><a href="#">blog</a></li>
+					<li><a href="#">contact</a></li>
 				</ul>
 			</nav>
 
@@ -62,17 +82,44 @@
 
 				<!-- Language -->
 				<div class="info_languages has_children">
-					<div class="language_flag"><img src="images/flag_6.png" alt="https://www.flaticon.com/authors/freepik"></div>
-					<div class="dropdown_text">Português</div>
+					<div class="language_flag"><img src="images/flag_1.svg" alt="https://www.flaticon.com/authors/freepik"></div>
+					<div class="dropdown_text">english</div>
 					<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
-					<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+					
+					<!-- Language Dropdown Menu -->
+					 <ul>
+					 	<li><a href="#">
+				 			<div class="language_flag"><img src="images/flag_2.svg" alt="https://www.flaticon.com/authors/freepik"></div>
+							<div class="dropdown_text">french</div>
+					 	</a></li>
+					 	<li><a href="#">
+				 			<div class="language_flag"><img src="images/flag_3.svg" alt="https://www.flaticon.com/authors/freepik"></div>
+							<div class="dropdown_text">japanese</div>
+					 	</a></li>
+					 	<li><a href="#">
+				 			<div class="language_flag"><img src="images/flag_4.svg" alt="https://www.flaticon.com/authors/freepik"></div>
+							<div class="dropdown_text">russian</div>
+					 	</a></li>
+					 	<li><a href="#">
+				 			<div class="language_flag"><img src="images/flag_5.svg" alt="https://www.flaticon.com/authors/freepik"></div>
+							<div class="dropdown_text">spanish</div>
+					 	</a></li>
+					 </ul>
 
 				</div>
 
 				<!-- Currency -->
 				<div class="info_currencies has_children">
-					<div class="dropdown_text">EUR</div>
+					<div class="dropdown_text">usd</div>
 					<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+
+					<!-- Currencies Dropdown Menu -->
+					 <ul>
+					 	<li><a href="#"><div class="dropdown_text">EUR</div></a></li>
+					 	<li><a href="#"><div class="dropdown_text">YEN</div></a></li>
+					 	<li><a href="#"><div class="dropdown_text">GBP</div></a></li>
+					 	<li><a href="#"><div class="dropdown_text">CAD</div></a></li>
+					 </ul>
 
 				</div>
 
@@ -97,27 +144,64 @@
 
 			<!-- Language -->
 			<div class="info_languages has_children">
-				<div class="language_flag"><img src="images/flag_6.png" alt="https://www.flaticon.com/authors/freepik"></div>
-				<div class="dropdown_text">Português</div>
-                <div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+				<div class="language_flag"><img src="images/flag_1.svg" alt="https://www.flaticon.com/authors/freepik"></div>
+				<div class="dropdown_text">english</div>
+				<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+				
+				<!-- Language Dropdown Menu -->
+				 <ul>
+				 	<li><a href="#">
+			 			<div class="language_flag"><img src="images/flag_2.svg" alt="https://www.flaticon.com/authors/freepik"></div>
+						<div class="dropdown_text">french</div>
+				 	</a></li>
+				 	<li><a href="#">
+			 			<div class="language_flag"><img src="images/flag_3.svg" alt="https://www.flaticon.com/authors/freepik"></div>
+						<div class="dropdown_text">japanese</div>
+				 	</a></li>
+				 	<li><a href="#">
+			 			<div class="language_flag"><img src="images/flag_4.svg" alt="https://www.flaticon.com/authors/freepik"></div>
+						<div class="dropdown_text">russian</div>
+				 	</a></li>
+				 	<li><a href="#">
+			 			<div class="language_flag"><img src="images/flag_5.svg" alt="https://www.flaticon.com/authors/freepik"></div>
+						<div class="dropdown_text">spanish</div>
+				 	</a></li>
+				 </ul>
+
 			</div>
 
 			<!-- Currency -->
 			<div class="info_currencies has_children">
-				<div class="dropdown_text">EUR</div>
+				<div class="dropdown_text">usd</div>
 				<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+
+				<!-- Currencies Dropdown Menu -->
+				 <ul>
+				 	<li><a href="#"><div class="dropdown_text">EUR</div></a></li>
+				 	<li><a href="#"><div class="dropdown_text">YEN</div></a></li>
+				 	<li><a href="#"><div class="dropdown_text">GBP</div></a></li>
+				 	<li><a href="#"><div class="dropdown_text">CAD</div></a></li>
+				 </ul>
+
 			</div>
 
 		</div>
+		<div class="menu_search">
+			<form action="#" class="header_search_form menu_mm">
+				<input type="search" class="search_input menu_mm" placeholder="Search" required="required">
+				<button class="header_search_button d-flex flex-column align-items-center justify-content-center menu_mm">
+					<i class="fa fa-search menu_mm" aria-hidden="true"></i>
+				</button>
+			</form>
+		</div>
 		<nav class="menu_nav">
 			<ul class="menu_mm">
-				<li class="menu_mm"><a href="Inicio.php">Inicio</a></li>
-				<li class="menu_mm"><a href="steam.php">Steam</a></li>
-				<li class="menu_mm"><a href="origin.php">Origin</a></li>
-				<li class="menu_mm"><a href="rockstar.php">RockStar</a></li>
-                <li class="menu_mm"><a href="battlenet.php">Battle.net</a></li>
-                <li class="menu_mm"><a href="epicgames.php">EpicGames</a></li>
-				<li class="menu_mm"><a href="login.php">Login</a></li>
+				<li class="menu_mm"><a href="index.php">home</a></li>
+				<li class="menu_mm"><a href="#">woman</a></li>
+				<li class="menu_mm"><a href="#">man</a></li>
+				<li class="menu_mm"><a href="#">lookbook</a></li>
+				<li class="menu_mm"><a href="blog.html">blog</a></li>
+				<li class="menu_mm"><a href="contact.html">contact</a></li>
 			</ul>
 		</nav>
 		<div class="menu_extra">
@@ -145,12 +229,14 @@
 					<div class="language_flag"><img src="images/flag_6.png" alt="https://www.flaticon.com/authors/freepik"></div>
 					<div class="dropdown_text">português</div>
 					<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+
 				</div>
 
 				<!-- Currency -->
 				<div class="info_currencies has_children">
-					<div class="dropdown_text">EUR</div>
+					<div class="dropdown_text">eur</div>
 					<div class="dropdown_arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></div>
+
 				</div>
 
 			</div>
@@ -178,7 +264,6 @@
             if($reg_cate['nivel']==1){
             $link='jogos.php?plataforma='.$reg_cate['categoria'];
             ?>
-            
                 <li><a href="<?php echo $link ?>"><?php echo $reg_cate['categoria']; ?><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
             <?php
                     }
@@ -207,7 +292,6 @@
                             while($reg_cate=mysqli_fetch_array($res_cate)){
                                 if($reg_cate['nivel']==1){
                                 $link='jogos.php?plataforma='.$reg_cate['categoria'];
-                                
                                 ?>
                                 <li><a href="<?php echo $link ?>"><?php echo $reg_cate['categoria']; ?><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
                                 <?php
@@ -233,7 +317,6 @@
                                 while($reg_cate=mysqli_fetch_array($res_cate)){
                                 if($reg_cate['nivel']==1){
                                 $link='jogos.php?plataforma='.$reg_cate['categoria'];
-                                
                         ?>
                                 <li><a href="<?php echo $link ?>"><?php echo $reg_cate['categoria']; ?><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
                         <?php
@@ -261,204 +344,140 @@
 			<div class="cart_icon"><a href="cart.php">
 				<img src="images/bag.png" alt="">
 			</a></div>
-			<div class="cart_text">carro</div>
+			<div class="cart_text">Carro</div>
 		</div>
 	</div>
 
 	<!-- Home -->
 
 	<div class="home">
-		
-		<!-- Home Slider -->
-		<div class="home_slider_container">
-			<div class="owl-carousel owl-theme home_slider">
-				
-				<!-- Slide -->
-				<div class="owl-item">
-					<div class="background_image" style="background-image:url(images/home_slider_4.jpg)"></div>
-					<div class="home_content_container">
-						<div class="home_content">
-						</div>
-					</div>
+		<div class="parallax_background parallax-window" data-parallax="scroll" data-image-src="images/checkout.jpg" data-speed="0.8"></div>
+		<div class="home_container">
+			<div class="home_content">
+				<div class="home_title">Cart</div>
+				<div class="breadcrumbs">
+					<ul class="d-flex flex-row align-items-center justify-content-start">
+						<li><a href="index.php">Home</a></li>
+						<li>Your Cart</li>
+					</ul>
 				</div>
-
-				<!-- Slide -->
-				<div class="owl-item">
-					<div class="background_image" style="background-image:url(images/home_slide_2.jpg)"></div>
-					<div class="home_content_container">
-						<div class="home_content">
-							<div class="home_title">Borderlands 3</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Slide -->
-				<div class="owl-item">
-					<div class="background_image" style="background-image:url(images/home_slider_1.jpg)"></div>
-					<div class="home_content_container">
-						<div class="home_content">
-						</div>
-					</div>
-				</div>
-
 			</div>
-				
-			<!-- Home Slider Navigation -->
-			<div class="home_slider_nav home_slider_prev trans_200"><div class=" d-flex flex-column align-items-center justify-content-center"><img src="images/prev.png" alt=""></div></div>
-			<div class="home_slider_nav home_slider_next trans_200"><div class=" d-flex flex-column align-items-center justify-content-center"><img src="images/next.png" alt=""></div></div>
-
 		</div>
 	</div>
 
-
-	<!-- Products -->
+	<!-- Cart -->
+    
     <?php
-        $sql=sprintf("select * from jogos where destaque=1;");
-        $res=mysqli_query($conn,$sql);
+
+        $sql=sprintf("select * from carrinho where cliente='%s';",$_SESSION['username']);
+        $res=mysqli_query($conn,$sql);                   
+                     
     ?>
 
-	<div class="products">
+	<div class="cart_section">
 		<div class="section_container">
 			<div class="container">
 				<div class="row">
 					<div class="col">
-						<div class="products_container grid">
-                            <?php
+						<div class="cart_container">
+							
+							<!-- Cart Bar -->
+							<div class="cart_bar">
+								<ul class="cart_bar_list item_list d-flex flex-row align-items-center justify-content-start">
+									<li>Produto</li>
+									<li>Quantidade/Preço</li>
+								</ul>
+							</div>
+
+							<!-- Cart Items -->
                             
+                            <?php
+                              
                             while($reg=mysqli_fetch_array($res)){
-                                
-                           
-                            
+                                 $reg["preco"]=$reg["preco"]*$reg["quantidade"];
+                                $preco_total=$preco_total+$reg["preco"];
                             ?>
-							<!-- Product -->
-							<div class="product grid-item hot">
-								<div class="product_inner">
-									<div class="product_image">
-										<img src="images/<?php echo $reg["nome_fisico"]?>" alt="">
-									</div>
-									<div class="product_content text-center">
-										<div class="product_title"><a href="product.php"><?php echo $reg["nome_jogo"]?></div>
-										<div class="product_price"><?php echo $reg["preco"]?>€</div>
-                                        
-                                        <form method="post" action="product.php">
-                                            <button type="submit" class="product_button ml-auto mr-auto trans_200">Ver detalhes</button>
-
-                                            <input type="hidden" name="id" value="<?php echo $reg['id']; ?>">
-
-                                        </form>
-									</div>
-								</div>	
-							</div>
                             
+							<div class="cart_items">
+								<ul class="cart_items_list">
+                                    
+									<!-- Cart Item -->
+									<li class="cart_item item_list d-flex flex-lg-row flex-column align-items-lg-center align-items-start justify-content-start">
+                                        
+										<div class="product d-flex flex-lg-row flex-column align-items-lg-center align-items-start justify-content-start">
+											<div><div class="product_image"><img src="images/<?php echo $reg["nome_fisico"];?>" alt=""></div></div>
+											<div class="product_name"><a href="product.php"><?php echo $reg["nome_jogo"];?></a></div>
+										</div>
+                                        <form method="post">
+                                        <div class="qty text-center"><input class="input" name="quant" type="number" min="1" max="99" value=<?php echo $reg['quantidade'] ?>></div>
+										<div class="product_price text-lg-center product_text"><span>Price: </span><?php echo $reg["preco"];?>€</div>
+                                        
+                                        <td class="text-right"><button  type="submit" name="add" class="main-btn icon-btn"><i class="fa fa-check"></i></button></td>
+                                        <input type="hidden" name="id" value="<?php echo $reg['id']; ?>">
+                                        </form>
+                                        <form method="post">
+										<td class="text-right"><button  type="submit" name="eliminar" class="main-btn icon-btn"><i class="fa fa-close"></i></button></td>
+										<input type="hidden" name="id" value="<?php echo $reg['id']; ?>">
+									</form>
+									</li>
+								</ul>
+							</div>
                             
                             <?php
-                                 }
+                            }
+                            
                             ?>
-							<!-- Product -->
-							<!--<div class="product grid-item">
-								<div class="product_inner">
-									<div class="product_image"><img src="images/product_2.jpg" alt=""></div>
-									<div class="product_content text-center">
-										<div class="product_title"><a href="product.html">CS:GO(Estado Prime)</a></div>
-										<div class="product_price">13.25€</div>
-										<div class="product_button ml-auto mr-auto trans_200"><a href="#">Adicionar ao Carro</a></div>
-									</div>
-								</div>	
+                            
+							<!-- Cart Buttons -->
+							<div class="cart_buttons d-flex flex-row align-items-start justify-content-start">
+								<div class="cart_buttons_inner ml-auto d-flex flex-row align-items-start justify-content-start flex-wrap">
+									<div class="button button_continue trans_200"><a href="Inicio.php">Continuar compras</a></div>
+								</div>
 							</div>
-
-							<!-- Product -->
-							<!--<div class="product grid-item sale">
-								<div class="product_inner">
-									<div class="product_image">
-										<img src="images/product_5.jpg" alt="">
-										<div class="product_tag">sale</div>
-									</div>
-									<div class="product_content text-center">
-										<div class="product_title"><a href="product.html">Borderlands 3</a></div>
-										<div class="product_price">40.99€<span>RRP 69.99</span></div>
-										<div class="product_button ml-auto mr-auto trans_200"><a href="#">Adicionar ao Carro</a></div>
-									</div>
-								</div>	
-							</div>
-
-							<!-- Product -->
-							<!--<div class="product grid-item">
-								<div class="product_inner">
-									<div class="product_image">
-										<img src="images/product_4.jpg" alt="">
-									</div>
-									<div class="product_content text-center">
-										<div class="product_title"><a href="product.html">Overwatch</a></div>
-										<div class="product_price">15.99€</div>
-										<div class="product_button ml-auto mr-auto trans_200"><a href="#">Adicionar ao Carro</a></div>
-									</div>
-								</div>	
-							</div>
-
-							<!-- Product -->
-							<!--<div class="product grid-item">
-								<div class="product_inner">
-									<div class="product_image">
-										<img src="images/product_3.jpg" alt="">
-									</div>
-									<div class="product_content text-center">
-										<div class="product_title"><a href="product.html">DaysGone</a></div>
-										<div class="product_price">29.99€</div>
-										<div class="product_button ml-auto mr-auto trans_200"><a href="#">Adicionar ao Carro</a></div>
-									</div>
-								</div>	
-							</div>
-
-							<!-- Product -->
-							<!--<div class="product grid-item new">
-								<div class="product_inner">
-									<div class="product_image">
-										<img src="images/product_6.jpg" alt="">
-										<div class="product_tag">new</div>
-									</div>
-									<div class="product_content text-center">
-										<div class="product_title"><a href="product.html">FIFA 20</a></div>
-										<div class="product_price">49.99€</div>
-										<div class="product_button ml-auto mr-auto trans_200"><a href="#">Adicionar ao Carro</a></div>
-									</div>
-								</div>	
-							</div>
-
-							<!-- Product -->
-							<!--<div class="product grid-item">
-								<div class="product_inner">
-									<div class="product_image">
-										<img src="images/product_7.jpg" alt="">
-									</div>
-									<div class="product_content text-center">
-										<div class="product_title"><a href="product.html">Red Dead Redemption 2</a></div>
-										<div class="product_price">34.99€</div>
-										<div class="product_button ml-auto mr-auto trans_200"><a href="#">Adicionar ao Carro</a></div>
-									</div>
-								</div>	
-							</div>
-
-							<!-- Product -->
-							<!--<div class="product grid-item sale">
-								<div class="product_inner">
-									<div class="product_image">
-										<img src="images/product_8.jpg" alt="">
-										<div class="product_tag">sale</div>
-									</div>
-									<div class="product_content text-center">
-										<div class="product_title"><a href="product.html">COD:Modern Warfare</a></div>
-										<div class="product_price">39.99€<span>RRP 59.49</span></div>
-										<div class="product_button ml-auto mr-auto trans_200"><a href="#">Adicionar ao Carro</a></div>
-									</div>
-								</div>	
-							</div>-->
-
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+
+
+		<div class="section_container cart_extra_container">
+			<div class="container">
+				<div class="row">
+
+					<!-- Cart Total -->
+					<div class="col-xxl-6">
+						<div class="cart_extra cart_extra_2">
+							<div class="cart_extra_content cart_extra_total">
+								<div class="cart_extra_title">Métodos de Pagamento</div>
+								<ul class="cart_extra_total_list">
+									<li class="d-flex flex-row align-items-center justify-content-start">
+										<div class="cart_extra_total_title">Total</div>
+										<div class="cart_extra_total_value ml-auto"><?php echo $preco_total; ?>€</div>
+									</li>
+								</ul>
+                                <br>
+                                <div class="payment">
+										<div class="payment_options">
+											<label class="payment_option clearfix">Paypal
+												<input type="radio" name="radio">
+												<span class="checkmark"></span>
+											</label>
+                                            <br>
+											<label class="payment_option clearfix">Cartão de Crédito
+												<input type="radio" name="radio">
+												<span class="checkmark"></span>
+											</label>
+										</div>
+									</div>
+								<div class="checkout_button trans_200"><a href="pedido.php">Efetuar Pedido</a></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>					
 
 		<!-- Credits -->
 		<div class="credits">
@@ -476,6 +495,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 				</div>
 			</div>
 		</div>
+
 </div>
 
 <script src="js/jquery-3.2.1.min.js"></script>
@@ -489,8 +509,6 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 <script src="plugins/OwlCarousel2-2.2.1/owl.carousel.js"></script>
 <script src="plugins/easing/easing.js"></script>
 <script src="plugins/parallax-js-master/parallax.min.js"></script>
-<script src="plugins/Isotope/isotope.pkgd.min.js"></script>
-<script src="plugins/Isotope/fitcolumns.js"></script>
-<script src="js/custom.js"></script>
+<script src="js/cart.js"></script>
 </body>
 </html>
